@@ -200,14 +200,13 @@ class Grafo:
             print("O Grafo não possui Ciclos nem Caminhos")
             return None
         elif self.cicloEuleriano==1:
-            print("Semi-Euleriano")
             caminho = self.caminho()
             for i in range(0, len(caminho)):
                 if i == len(caminho) - 1:
                     print(caminho[i].dado)
                 else:
                     print(f"{caminho[i].dado}->", end='')
-
+            return caminho
         else:
             print("Euleriano")
             ciclo = self.ciclo()
@@ -216,7 +215,7 @@ class Grafo:
                     print(ciclo[i].dado)
                 else:
                     print(f"{ciclo[i].dado}->", end='')
-
+            return ciclo
     def caminho(self):
         # Garantindo que há 2 Vértices de Grau Impar(Em tese já foi filtrado, mas pode ser que o método seja execuado por fora)
         if self.cicloEuleriano == 1:
@@ -254,33 +253,37 @@ class Grafo:
             arestas = self.E.copy()
             return self.continuidadeCiclo([verticeInicial],verticeInicial,arestas)
     def continuidadeCiclo(self,ciclo,verticeAtual,arestasDisponiveis):
-        if len(arestasDisponiveis)==0:
-            if verticeAtual.dado == ciclo[0].dado:
-                return ciclo
-            else:
-                #Reiniciando
-                return self.ciclo()
+        if len(arestasDisponiveis)==0 and verticeAtual.dado == ciclo[0].dado:
+            return ciclo
         else:
             aresta = arestasDisponiveis[random.randint(0,len(arestasDisponiveis)-1)]
             #ALEATÓRIO
-            while aresta.vertice1.dado not in verticeAtual.conectados and aresta.vertice2.dado not in verticeAtual.conectados:
-                  aresta = arestasDisponiveis[random.randint(0, len(arestasDisponiveis) - 1)]
-            if verticeAtual.dado == aresta.vertice1.dado:
-                 verticeAtual = aresta.vertice2
-            else:
-                 verticeAtual = aresta.vertice1
+            #while aresta.vertice1.dado not in verticeAtual.conectados and aresta.vertice2.dado not in verticeAtual.conectados:
+            #      aresta = arestasDisponiveis[random.randint(0, len(arestasDisponiveis) - 1)]
+            #if verticeAtual.dado == aresta.vertice1.dado:
+            #     verticeAtual = aresta.vertice2
+            #else:
+            #     verticeAtual = aresta.vertice1
             #SEQUENCIAL
-            # for aresta in arestasDisponiveis:
-            #     if aresta.vertice1.dado in verticeAtual.conectados or aresta.vertice2.dado in verticeAtual.conectados:
-            #         if verticeAtual.dado == aresta.vertice1.dado:
-            #             verticeAtual = aresta.vertice2
-            #         else:
-            #             verticeAtual = aresta.vertice1
-            #         break
+            for i in range(0,len(arestasDisponiveis)):
+                if arestasDisponiveis[i].vertice1.dado ==verticeAtual.dado or arestasDisponiveis[i].vertice2.dado == verticeAtual.dado:
+                    if verticeAtual.dado == arestasDisponiveis[i].vertice1.dado:
+                        verticeAtual = arestasDisponiveis[i].vertice2
+                    else:
+                      verticeAtual = arestasDisponiveis[i].vertice1
+                    # Não pode passar novamente por essa aresta
+                    del arestasDisponiveis[i]
+                    break
             ciclo.append(verticeAtual)
-            # Não pode passar novamente por essa aresta
-            arestasDisponiveis.remove(aresta)
-            return self.continuidadeCiclo(ciclo,verticeAtual,arestasDisponiveis)
+            #Há ainda arestas disponíveis no vértice atual?
+            disponibilidadeAtual=[]
+            for aresta in arestasDisponiveis:
+                if aresta.vertice1.dado ==verticeAtual.dado or aresta.vertice2.dado == verticeAtual.dado:
+                    disponibilidadeAtual.append(aresta)
+            if len(disponibilidadeAtual)==0 and len(arestasDisponiveis)>0:
+                return self.ciclo()
+            else:
+                return self.continuidadeCiclo(ciclo,verticeAtual,arestasDisponiveis)
 class Fecho(Grafo):
     def fechoHamiltoniano(self):
         #Montando o Fecho Hamiltoniano
@@ -309,10 +312,38 @@ grafo2 = Grafo(pontos,ligacoes2)
 grafo3 = Grafo(pontos,ligacoes3)
 grafo4 = Grafo(pontos,ligacoes4)
 print("Grafo 1:")
-grafo1.ciclo_ou_caminho()
+fig1 = plt.figure()
+percurso1=grafo1.ciclo_ou_caminho()
+G1=nx.Graph()
+def animate(i,fig,G,percurso):
+    fig.clear()
+    for vertice in grafo1.V:
+        G.add_node(vertice.dado)
+    G.add_edge(percurso[i].dado,percurso[i+1].dado)
+    nx.draw_circular(G, node_color='skyblue',with_labels=True,edge_color='red')
+fig1 = plt.figure()
+G1 = nx.Graph()
+if grafo1.cicloEuleriano>0:
+    anim = animation.FuncAnimation(fig=fig1, func=animate, frames=range(len(percurso1) - 1), interval=2000,fargs=(fig1,G1, percurso1))
+    plt.show()
 print("Grafo 2:")
-grafo2.ciclo_ou_caminho()
+fig2 = plt.figure()
+percurso2=grafo2.ciclo_ou_caminho()
+G2=nx.Graph()
+if grafo2.cicloEuleriano>0:
+    anim = animation.FuncAnimation(fig=fig2, func=animate,frames=range(len(percurso2)-1),interval=2000,fargs=(fig2,G2,percurso2))
+    plt.show()
 print("Grafo 3:")
-grafo3.ciclo_ou_caminho()
+fig3 = plt.figure()
+percurso3=grafo3.ciclo_ou_caminho()
+G3=nx.Graph()
+if grafo3.cicloEuleriano>0:
+    anim = animation.FuncAnimation(fig=fig3, func=animate, frames=range(len(percurso3) - 1), interval=2000,fargs=(fig3,G3, percurso3))
+    plt.show()
 print("Grafo 4:")
-grafo4.ciclo_ou_caminho()
+fig4 = plt.figure()
+percurso4=grafo4.ciclo_ou_caminho()
+G4=nx.Graph()
+if grafo4.cicloEuleriano>0:
+    anim = animation.FuncAnimation(fig=fig4, func=animate, frames=range(len(percurso4) - 1), interval=2000,fargs=(fig4,G4, percurso4))
+    plt.show()
