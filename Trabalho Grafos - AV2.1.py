@@ -315,35 +315,62 @@ print("Grafo 1:")
 fig1 = plt.figure()
 percurso1=grafo1.ciclo_ou_caminho()
 G1=nx.Graph()
-def animate(i,fig,G,percurso):
+pesos1=[]
+def animate(i,fig,G,percurso,pesos):
     fig.clear()
     for vertice in grafo1.V:
         G.add_node(vertice.dado)
-    G.add_edge(percurso[i].dado,percurso[i+1].dado)
+    pos = nx.circular_layout(G)
+    peso=round(random.random(),2)
+    pesos.append(peso)
+    G.add_edge(percurso[i].dado,percurso[i+1].dado,weight=peso)
     nx.draw_circular(G, node_color='skyblue',with_labels=True,edge_color='red')
+    nx.draw_networkx_edge_labels(G, pos)
 fig1 = plt.figure()
 G1 = nx.Graph()
+soma1=0
 if grafo1.cicloEuleriano>0:
-    anim = animation.FuncAnimation(fig=fig1, func=animate, frames=range(len(percurso1) - 1), interval=2000,fargs=(fig1,G1, percurso1))
+    anim = animation.FuncAnimation(fig=fig1, func=animate, frames=range(len(percurso1) - 1), interval=2000,fargs=(fig1,G1, percurso1,pesos1))
     plt.show()
+for peso in pesos1:
+    soma1+=peso
+print(soma1)
+
 print("Grafo 2:")
 fig2 = plt.figure()
 percurso2=grafo2.ciclo_ou_caminho()
 G2=nx.Graph()
+pesos2=[]
+soma2=0
 if grafo2.cicloEuleriano>0:
-    anim = animation.FuncAnimation(fig=fig2, func=animate,frames=range(len(percurso2)-1),interval=2000,fargs=(fig2,G2,percurso2))
+    anim = animation.FuncAnimation(fig=fig2, func=animate,frames=range(len(percurso2)-1),interval=2000,fargs=(fig2,G2,percurso2,pesos2))
     plt.show()
+for peso in pesos2:
+    soma2+=peso
+print(soma2)
+
 print("Grafo 3:")
 fig3 = plt.figure()
 percurso3=grafo3.ciclo_ou_caminho()
 G3=nx.Graph()
+pesos3=[]
+soma3=0
 if grafo3.cicloEuleriano>0:
-    anim = animation.FuncAnimation(fig=fig3, func=animate, frames=range(len(percurso3) - 1), interval=2000,fargs=(fig3,G3, percurso3))
+    anim = animation.FuncAnimation(fig=fig3, func=animate, frames=range(len(percurso3) - 1), interval=2000,fargs=(fig3,G3, percurso3,pesos3))
     plt.show()
+for peso in pesos3:
+    soma3+=peso
+print(soma3)
+
 print("Grafo 4:")
 fig4 = plt.figure()
 percurso4=grafo4.ciclo_ou_caminho()
 G4=nx.Graph()
+pesos4=[]
+soma4=0
 if grafo4.cicloEuleriano>0:
-    anim = animation.FuncAnimation(fig=fig4, func=animate, frames=range(len(percurso4) - 1), interval=2000,fargs=(fig4,G4, percurso4))
+    anim = animation.FuncAnimation(fig=fig4, func=animate, frames=range(len(percurso4) - 1), interval=2000,fargs=(fig4,G4, percurso4,pesos4))
     plt.show()
+for peso in pesos4:
+    soma4+=peso
+print(soma4)
